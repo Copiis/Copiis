@@ -2,7 +2,8 @@
 // @name         Image Text Reader to Clipboard
 // @namespace    http://tampermonkey.net/
 // @version      0.2
-// @description  Liest Text aus Bildern und kopiert ihn in die Zwischenablage
+// @description  Reads text from images and copies it to the clipboard
+// @author       Copiis
 // @match        *://*/*
 // @require      https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js
 // @grant        none

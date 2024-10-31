@@ -1,41 +1,69 @@
 # Image Text Reader to Clipboard
 
-## Description
-This userscript allows you to extract text from images on any webpage by clicking on the image. The extracted text is translated into German and copied to the clipboard for easy access. It uses Tesseract.js for Optical Character Recognition (OCR) and Google Translate for translation.
+A Tampermonkey user script that extracts text from images on web pages using Optical Character Recognition (OCR) and copies it to the clipboard. The text extraction is triggered by a right-click on the image.
 
 ## Features
-- Click on any image to read the text.
-- Automatically cleans the extracted text for better accuracy.
-- Copies the translated text directly to your clipboard.
-- Easy integration with Tampermonkey for enhanced web browsing experience.
+
+- Uses [Tesseract.js](https://github.com/naptha/tesseract.js) for OCR to recognize text in images.
+- Copies the recognized text directly to the clipboard.
+- Simple right-click context menu activation.
 
 ## Installation
-1. Install [Tampermonkey](https://www.tampermonkey.net/) if you haven't already.
-2. Click on the Tampermonkey icon in your browser and select "Create a new script."
-3. Replace the default script with the content of this script.
-4. Save the script.
+
+1. **Install Tampermonkey**: If you haven't already, install the Tampermonkey extension for your browser:
+   - [Chrome](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmanafdgjjjfdkmohmdcjp)
+   - [Firefox](https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/)
+   - [Microsoft Edge](https://microsoftedge.microsoft.com/addons/detail/tampermonkey/ffhgeephbihgjgmkdckdibgfcgdnokbb)
+   - [Safari](https://apps.apple.com/us/app/tampermonkey/id1482490089)
+
+2. **Add the Script**:
+   - Open the Tampermonkey dashboard.
+   - Click on the "Add a new script" button.
+   - Replace the default template with the script provided below.
+   - Save the script.
 
 ## Usage
-- Navigate to any webpage with images.
-- Click on an image containing text.
-- Wait for the script to recognize the text, translate it to German, and copy it to your clipboard.
-- A confirmation alert will display the translated text.
 
-## Requirements
-- Tampermonkey installed in your browser.
-- Internet access for Tesseract.js and Google Translate.
+1. Navigate to a web page containing images.
+2. Right-click on any image.
+3. The script will extract the text from the image and copy it to your clipboard.
+4. You will receive an alert with the recognized text.
 
-## Dependencies
-- [Tesseract.js](https://github.com/naptha/tesseract.js): JavaScript library for OCR.
-- Google Translate for translation services.
+## Script
 
-## Notes
-- The script assumes the original text in the image is in English.
-- If no text is recognized or if the translation fails, an alert will inform you of the issue.
-- Ensure that the images clicked contain clear and readable text for better results.
+```javascript
+// ==UserScript==
+// @name         Image Text Reader to Clipboard
+// @namespace    http://tampermonkey.net/
+// @version      0.3
+// @description  Reads text from images and copies it to the clipboard on right-click
+// @author       Copiis
+// @match        *://*/*
+// @require      https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js
+// @grant        none
+// ==/UserScript==
 
-## Author
-- **Copiis**
+(function() {
+    'use strict';
 
-## License
-This script is released under the MIT License. Feel free to use and modify it as needed.
+    // Function to extract text from an image and copy it to the clipboard
+    async function readTextAndCopyToClipboard(imgElement) {
+        const { data: { text } } = await Tesseract.recognize(imgElement.src, 'eng'); // Use 'eng' for English text
+        console.log("Recognized text:", text);
+
+        // Copy text to the clipboard
+        navigator.clipboard.writeText(text).then(() => {
+            alert("Text copied to clipboard: " + text);
+        }).catch(err => {
+            console.error("Error copying to clipboard:", err);
+        });
+    }
+
+    // Loop through images on the page and set up context menu event
+    document.querySelectorAll('img').forEach(img => {
+        img.addEventListener('contextmenu', (event) => {
+            event.preventDefault(); // Prevent the default context menu
+            readTextAndCopyToClipboard(img);  // Right-click on image triggers text recognition
+        });
+    });
+})();

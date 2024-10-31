@@ -1,0 +1,31 @@
+// ==UserScript==
+// @name         Image Text Reader to Clipboard
+// @namespace    http://tampermonkey.net/
+// @version      0.2
+// @description  Liest Text aus Bildern und kopiert ihn in die Zwischenablage
+// @match        *://*/*
+// @require      https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    // Funktion, um Text aus einem Bild zu extrahieren und in die Zwischenablage zu kopieren
+    async function readTextAndCopyToClipboard(imgElement) {
+        const { data: { text } } = await Tesseract.recognize(imgElement.src, 'deu'); // 'deu' für deutschen Text
+        console.log("Erkannter Text:", text);
+
+        // Text in die Zwischenablage kopieren
+        navigator.clipboard.writeText(text).then(() => {
+            alert("Text wurde in die Zwischenablage kopiert: " + text);
+        }).catch(err => {
+            console.error("Fehler beim Kopieren in die Zwischenablage:", err);
+        });
+    }
+
+    // Bilder auf der Seite durchlaufen und OCR ausführen
+    document.querySelectorAll('img').forEach(img => {
+        img.addEventListener('click', () => readTextAndCopyToClipboard(img));  // Klick auf Bild startet Texterkennung
+    });
+})();

@@ -1,4 +1,4 @@
-# Image Text Reader to Clipboard (Google Translate)
+# Image Text Reader to Clipboard
 
 ## Description
 This userscript allows you to extract text from images on any webpage by clicking on the image. The extracted text is translated into German and copied to the clipboard for easy access. It uses Tesseract.js for Optical Character Recognition (OCR) and Google Translate for translation.

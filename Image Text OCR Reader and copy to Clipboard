@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Image Text Reader to Clipboard
 // @namespace    http://tampermonkey.net/
-// @version      0.2
-// @description  Reads text from images and copies it to the clipboard
+// @version      0.3
+// @description  Reads text from images and copies it to the clipboard on right-click
 // @author       Copiis
 // @match        *://*/*
 // @require      https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js
@@ -12,21 +12,24 @@
 (function() {
     'use strict';
 
-    // Funktion, um Text aus einem Bild zu extrahieren und in die Zwischenablage zu kopieren
+    // Function to extract text from an image and copy it to the clipboard
     async function readTextAndCopyToClipboard(imgElement) {
-        const { data: { text } } = await Tesseract.recognize(imgElement.src, 'deu'); // 'deu' für deutschen Text
-        console.log("Erkannter Text:", text);
+        const { data: { text } } = await Tesseract.recognize(imgElement.src, 'eng'); // Use 'eng' for English text
+        console.log("Recognized text:", text);
 
-        // Text in die Zwischenablage kopieren
+        // Copy text to the clipboard
         navigator.clipboard.writeText(text).then(() => {
-            alert("Text wurde in die Zwischenablage kopiert: " + text);
+            alert("Text copied to clipboard: " + text);
         }).catch(err => {
-            console.error("Fehler beim Kopieren in die Zwischenablage:", err);
+            console.error("Error copying to clipboard:", err);
         });
     }
 
-    // Bilder auf der Seite durchlaufen und OCR ausführen
+    // Loop through images on the page and set up context menu event
     document.querySelectorAll('img').forEach(img => {
-        img.addEventListener('click', () => readTextAndCopyToClipboard(img));  // Klick auf Bild startet Texterkennung
+        img.addEventListener('contextmenu', (event) => {
+            event.preventDefault(); // Prevent the default context menu
+            readTextAndCopyToClipboard(img);  // Right-click on image triggers text recognition
+        });
     });
 })();
